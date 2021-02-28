@@ -4,7 +4,7 @@ from pathlib import Path
 from sqlite3 import Error
 
 
-class DataBase:
+class SQLiteDataBase:
 
     def __init__(self):
         self.connection = None
@@ -17,5 +17,23 @@ class DataBase:
             print("Connection to SQLite DB successful \n"
                   f"    DB name: {self.database_name} \n"
                   f"    Path to DB: {self.database_path}")
+        except Error as e:
+            print(f"The error '{e}' occurred")
+
+    def execute_query(self, query):
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            self.connection.commit()
+        except Error as e:
+            print(f"The error '{e}' occurred")
+
+    def execute_read_query(self, query):
+        cursor = self.connection.cursor()
+        result = None
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return result
         except Error as e:
             print(f"The error '{e}' occurred")
