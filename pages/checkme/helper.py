@@ -91,8 +91,10 @@ class CheckmeHelper(Checkme):
         actions_xpath_locator = f"{PageLocators.TABLE_CONTENT_XPATH_LOCATOR[1]}/tr[{n}]/td[4]"
         return tuple([action.text for action in self.find_elements(locator=(By.XPATH, actions_xpath_locator), time=1)])
 
-    def get_record(self, n):
-        return self.get_name(n), self.get_count(n), self.get_price(n), self.get_actions(n)
+    def get_record(self, n, actions_tuple=False):
+        if actions_tuple:
+            return self.get_name(n), self.get_count(n), self.get_price(n), self.get_actions(n)
+        return self.get_name(n), self.get_count(n), self.get_price(n), ', '.join(self.get_actions(n))
 
     def parse_table_content(self):
         content_xpath_locator = f"{PageLocators.TABLE_CONTENT_XPATH_LOCATOR[1]}/tr"
