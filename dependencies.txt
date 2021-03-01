@@ -2,4 +2,3 @@ pytest
 selenium
 requests
 pathlib
-configparser
