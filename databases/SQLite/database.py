@@ -14,16 +14,12 @@ class SQLiteDataBase:
         self.database_path = (Path(os.getenv('DB_DIR')) / f'{self.database_name}.sqlite').as_posix()
         try:
             self.connection = sqlite3.connect(self.database_path)
-            print("Connection to SQLite DB successful \n"
-                  f"    DB name: {self.database_name} \n"
-                  f"    Path to DB: {self.database_path}")
         except Error as e:
             print(f"The error '{e}' occurred")
 
     def close_connection(self):
         try:
             self.connection = self.connection.close()
-            print(f"Connection to database {self.database_name} has been closed!")
             del (self.database_name)
             del (self.database_path)
         except Error as e:
