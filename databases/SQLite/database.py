@@ -15,7 +15,7 @@ class SQLiteDataBase:
         try:
             self.connection = sqlite3.connect(self.database_path)
         except Error as e:
-            print(f"The error '{e}' occurred")
+            raise Error(e)
 
     def close_connection(self):
         try:
@@ -23,7 +23,7 @@ class SQLiteDataBase:
             del self.database_name
             del self.database_path
         except Error as e:
-            print(f"The error '{e}' occurred")
+            raise Error(e)
 
     def execute_query(self, query):
         cursor = self.connection.cursor()
@@ -31,7 +31,7 @@ class SQLiteDataBase:
             cursor.execute(query)
             self.connection.commit()
         except Error as e:
-            print(f"The error '{e}' occurred")
+            raise Error(e)
 
     def execute_read_query(self, query):
         cursor = self.connection.cursor()
@@ -41,4 +41,4 @@ class SQLiteDataBase:
             result = cursor.fetchall()
             return result
         except Error as e:
-            print(f"The error '{e}' occurred")
+            raise Error(e)
