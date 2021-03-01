@@ -1,7 +1,7 @@
 from pages.checkme.helper import CheckmeHelper
 
 
-class TestTask1:
+class TestTask1_and_UI:
 
     def test_check_the_filling_of_the_table(self, chrome_driver, database):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -167,3 +167,4 @@ class TestTask1:
         checkme_site.click_the_delete_record(del_index)
 
         assert len(checkme_site.parse_table_content()) == len(table_content), "The last added record wasn't removed!"
+
