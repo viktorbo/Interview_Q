@@ -20,6 +20,15 @@ class SQLiteDataBase:
         except Error as e:
             print(f"The error '{e}' occurred")
 
+    def close_connection(self):
+        try:
+            self.connection = self.connection.close()
+            print(f"Connection to database {self.database_name} has been closed!")
+            del (self.database_name)
+            del (self.database_path)
+        except Error as e:
+            print(f"The error '{e}' occurred")
+
     def execute_query(self, query):
         cursor = self.connection.cursor()
         try:
