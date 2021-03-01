@@ -81,11 +81,11 @@ class CheckmeHelper(Checkme):
 
     def get_count(self, n):
         count_xpath_locator = f"{PageLocators.TABLE_CONTENT_XPATH_LOCATOR[1]}/tr[{n}]/td[2]"
-        return self.find_element(locator=(By.XPATH, count_xpath_locator), time=1).text
+        return int(self.find_element(locator=(By.XPATH, count_xpath_locator), time=1).text)
 
     def get_price(self, n):
         price_xpath_locator = f"{PageLocators.TABLE_CONTENT_XPATH_LOCATOR[1]}/tr[{n}]/td[3]"
-        return self.find_element(locator=(By.XPATH, price_xpath_locator), time=1).text
+        return int(self.find_element(locator=(By.XPATH, price_xpath_locator), time=1).text)
 
     def get_actions(self, n):
         actions_xpath_locator = f"{PageLocators.TABLE_CONTENT_XPATH_LOCATOR[1]}/tr[{n}]/td[4]"
