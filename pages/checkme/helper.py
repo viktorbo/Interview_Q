@@ -124,3 +124,17 @@ class CheckmeHelper(Checkme):
         content_xpath_locator = f"{PageLocators.TABLE_CONTENT_XPATH_LOCATOR[1]}/tr"
         return [self.get_record(i+1) for i in range(len(self.find_elements(locator=(By.XPATH, content_xpath_locator))))]
 
+    # ADD RECORDS
+    def add_table_record(self,  name=None, count=None, price=None):
+        add_button = self.find_element(locator=PageLocators.ADD_BUTTON_ID_LOCATOR)
+        if not add_button.is_displayed():
+            self.click_the_open_button()
+        self.enter_item_information(name=name, count=count, price=price)
+        self.click_the_add_button()
+        self.clear_input_fields()
+
+    def add_table_records(self, recs):
+        for rec in recs:
+            self.add_table_record(*rec)
+
+
