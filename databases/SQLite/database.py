@@ -2,7 +2,7 @@ import os
 import sqlite3
 from pathlib import Path
 from sqlite3 import Error
-
+from databases.SQLite.query_generator import SQLiteQueryGenerator as q_gen
 
 class SQLiteDataBase:
 
@@ -42,3 +42,14 @@ class SQLiteDataBase:
             return result
         except Error as e:
             raise Error(e)
+
+    # OPERATIONS
+    def create_table(self, table_name, descripted_columns: dict):
+        self.execute_query(query=q_gen.create_table(table_name=table_name, descripted_columns=descripted_columns))
+
+    def add_record(self, table_name, columns_names, val):
+        self.execute_query(query=q_gen.add_record_to_table(table_name=table_name, column_names=columns_names, value=val))
+
+    def add_records(self, table_name, columns_names, val: list or tuple):
+        self.execute_query(query=q_gen.add_records_to_table(table_name=table_name, column_names=columns_names, values=val))
+
