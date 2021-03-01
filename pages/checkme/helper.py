@@ -1,6 +1,7 @@
 from pages.checkme.page import Checkme
 from pages.checkme.locators import PageLocators
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 
 class CheckmeHelper(Checkme):
@@ -57,6 +58,29 @@ class CheckmeHelper(Checkme):
         self.enter_name(name)
         self.enter_count(count)
         self.enter_price(price)
+
+    def clear_name_field(self):
+        name_field = self.find_element(locator=PageLocators.INPUT_NAME_FIELD_ID_LOCATOR, time=2)
+        name_field.click()
+        while name_field.get_attribute('value') != '':
+            name_field.send_keys(Keys.BACK_SPACE)
+
+    def clear_count_field(self):
+        count_field = self.find_element(locator=PageLocators.INPUT_COUNT_FIELD_ID_LOCATOR, time=2)
+        count_field.click()
+        while count_field.get_attribute('value') != '':
+            count_field.send_keys(Keys.BACK_SPACE)
+
+    def clear_price_field(self):
+        price_field = self.find_element(locator=PageLocators.INPUT_PRICE_FIELD_ID_LOCATOR, time=2)
+        price_field.click()
+        while price_field.get_attribute('value') != '':
+            price_field.send_keys(Keys.BACK_SPACE)
+
+    def clear_input_fields(self):
+        self.clear_name_field()
+        self.clear_count_field()
+        self.clear_price_field()
 
     # HEADER PARSING
     def get_names_header(self):
