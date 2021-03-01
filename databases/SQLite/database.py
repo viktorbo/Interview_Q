@@ -53,3 +53,6 @@ class SQLiteDataBase:
     def add_records(self, table_name, columns_names, val: list or tuple):
         self.execute_query(query=q_gen.add_records_to_table(table_name=table_name, column_names=columns_names, values=val))
 
+    def select_all(self, table_name):
+        return self.execute_read_query(query=f"SELECT * FROM {table_name};")
+
