@@ -1,5 +1,9 @@
 class SQLiteQueryGenerator:
     @staticmethod
+    def transform_quotes(str_list):
+        return ', '.join([f'"{obj}"' for obj in str_list])
+
+    @staticmethod
     def create_table(table_name, descripted_columns: dict) -> str:
         columns = ''
         for column, description in descripted_columns.items():
@@ -15,8 +19,7 @@ class SQLiteQueryGenerator:
             str_values += f"{value}, "
         str_values = str_values[:-2]  # remove ', ' symbols from the end of the string
 
-        fixed_column_names = ', '.join([f'"{obj}"' for obj in column_names])
-        query = f"INSERT INTO {table_name} ({fixed_column_names}) VALUES {str_values};".replace('\'', '"')
+        query = f"INSERT INTO {table_name} ({SQLiteQueryGenerator.transform_quotes(column_names)}) VALUES {str_values};".replace('\'', '"')
         return query
 
     @staticmethod
