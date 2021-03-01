@@ -11,7 +11,7 @@ class SQLiteDataBase:
 
     def create_connection(self, database_name):
         self.database_name = database_name
-        self.database_path = (Path(os.getenv('DB_DIR')) / f'{self.database_name}.sqlite').as_posix()
+        self.database_path = (Path(os.getenv('DATABASE_DIR')) / f'{self.database_name}.sqlite').as_posix()
         try:
             self.connection = sqlite3.connect(self.database_path)
         except Error as e:
