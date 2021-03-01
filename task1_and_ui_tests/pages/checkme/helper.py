@@ -1,5 +1,5 @@
-from pages.checkme.page import Checkme
-from pages.checkme.locators import PageLocators
+from task1_and_ui_tests.pages.checkme.page import Checkme
+from task1_and_ui_tests.pages.checkme.locators import PageLocators
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 

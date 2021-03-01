@@ -1,4 +1,4 @@
-from pages.checkme.helper import CheckmeHelper
+from task1_and_ui_tests.pages.checkme.helper import CheckmeHelper
 
 
 class TestTask1_and_UI:

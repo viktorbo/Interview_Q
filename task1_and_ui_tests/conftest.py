@@ -1,7 +1,7 @@
 import pytest
 import os
 from selenium import webdriver
-from databases.SQLite.database import SQLiteDataBase
+from task1_and_ui_tests.databases.SQLite.database import SQLiteDataBase
 
 
 @pytest.fixture(scope='class')

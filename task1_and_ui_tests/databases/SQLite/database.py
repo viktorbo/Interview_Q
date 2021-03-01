@@ -2,7 +2,7 @@ import os
 import sqlite3
 from pathlib import Path
 from sqlite3 import Error
-from databases.SQLite.query_generator import SQLiteQueryGenerator as q_gen
+from task1_and_ui_tests.databases.SQLite.query_generator import SQLiteQueryGenerator as q_gen
 
 class SQLiteDataBase:
 
