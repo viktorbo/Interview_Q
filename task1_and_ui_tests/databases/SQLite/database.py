@@ -4,6 +4,7 @@ from pathlib import Path
 from sqlite3 import Error
 from task1_and_ui_tests.databases.SQLite.query_generator import SQLiteQueryGenerator as q_gen
 
+
 class SQLiteDataBase:
 
     def __init__(self):
