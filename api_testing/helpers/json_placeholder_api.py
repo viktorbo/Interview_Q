@@ -1,11 +1,11 @@
 from pathlib import Path
 import requests
-
+import os
 
 class JSON_PlaceholderAPI:
 
     BASE_URL = "http://jsonplaceholder.typicode.com"
-    JSON_DIR = (Path.cwd()/'jsons').as_posix()
+    JSON_DIR = os.getenv('JSON_DIR')
 
     POSTS_URL = BASE_URL + '/posts'
     POSTS_JSON = (Path(JSON_DIR) / 'posts.json').as_posix()

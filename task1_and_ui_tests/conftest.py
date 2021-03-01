@@ -6,7 +6,7 @@ from task1_and_ui_tests.databases.SQLite.database import SQLiteDataBase
 
 @pytest.fixture(scope='class')
 def chrome_driver():
-    driver = webdriver.Chrome(executable_path=os.getenv('CHROME_DRIVER_PATH'))
+    driver = webdriver.Chrome(executable_path=os.getenv('DRIVER_PATH'))
     yield driver
     driver.quit()
 
