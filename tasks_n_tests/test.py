@@ -1,0 +1,169 @@
+from pages.checkme.helper import CheckmeHelper
+
+
+class TestTask1:
+
+    def test_check_the_filling_of_the_table(self, chrome_driver, database):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        # LOADING checkme TABLE DATA TO THE SQLITE DATABASE
+        table_header = checkme_site.parse_table_header()
+        current_table_content = checkme_site.parse_table_content()
+
+        db_table_name = 'checkme'
+        db_table_columns = ['id', *table_header]
+        db_table_columns_description = ['INTEGER PRIMARY KEY AUTOINCREMENT', 'TEXT', 'INTEGER', 'INTEGER', 'TEXT']
+
+        database.create_table(table_name=db_table_name,
+                              descripted_columns=dict(zip(db_table_columns, db_table_columns_description)))
+
+        database.add_records(table_name=db_table_name,
+                             columns_names=table_header,
+                             val=current_table_content)
+
+        # ADDING SOME RECORDS TO THE TABLE ON THE SITE
+        new_table_records = [('Joja', 5, 100500), ('Lupa', 1, 777), ('Pupa', 2, 300)]
+        checkme_site.add_table_records(new_table_records)
+        current_site_table_content = checkme_site.parse_table_content()
+        print(f"Records {new_table_records} were added to the checkme (site) table!")
+
+
+        # DATABASE / SITE DATA COMPARISON
+        site_table_set = set(current_site_table_content)
+        database_set = set([obj[1:] for obj in database.select_all('checkme')])
+
+        print("Records in DATABASE, but NOT on the SITE:      "
+              f"{list(database_set.difference(site_table_set))} \n"
+              "Records ON the SITE, but NOT in DATABASE:       "
+              f"{list(site_table_set.difference(database_set))} \n"
+              "Duplicated records:                             "
+              f"{list(set.intersection(database_set, site_table_set))}"
+              ""
+              )
+
+        # INPUT DATA COMPARISON FOR SITE
+        new_table_records_names = [obj[0] for obj in new_table_records]
+        new_records_from_site = [obj[:-1] for obj in current_site_table_content if obj[0] in new_table_records_names]
+
+        assert len(new_table_records) == len(new_records_from_site), \
+            "Count of new records in the checkme (site) don't equal the number of new records"
+
+        for i in range(len(new_table_records)):
+            if set(new_table_records[i]) == set(new_records_from_site[i]) and new_table_records[i] != new_records_from_site[i]:
+                print("\n "
+                      f"Columns order in new record {new_records_from_site[i]} don't match with original record {new_table_records[i]}")
+
+    def test_check_add_record(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        origin_table_content = checkme_site.parse_table_content()
+
+        new_record = ('Joka', 200, 1000)
+        checkme_site.add_table_record(*new_record)
+        new_table_content = checkme_site.parse_table_content()
+
+        assert set(set(new_table_content).difference(set(origin_table_content)).pop()[0:3]) == set(new_record), \
+            "Record added incorrectly or not added!"
+
+    def test_check_click_dicard_button(self,chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        checkme_site.click_the_open_button()
+        new_record = ('Joka', 200, 1000)
+        checkme_site.enter_item_information(*new_record)
+        checkme_site.click_the_discard_button()
+
+        assert checkme_site.all_fields_is_empty(), "Discard button doesn't work!"
+
+    def test_count_sorting_origin(self,chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        sorted_counts = sorted([checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))])
+        checkme_site.click_the_counts_header()
+        counts = [checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))]
+
+        assert counts == sorted_counts, "Sorting by count doesn't work!"
+
+    def test_count_sorting_add(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        new_record = ('Joka', 200, 1000)
+        checkme_site.add_table_record(*new_record)
+
+        sorted_counts = sorted([checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))])
+        checkme_site.click_the_counts_header()
+        counts = [checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))]
+
+        assert counts == sorted_counts, "Sorting by count after adding record doesn't work!"
+
+    def test_price_sorting_origin(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        sorted_prices = sorted([checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))])
+        checkme_site.click_the_prices_header()
+        prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
+
+        assert prices == sorted_prices, "Sorting by price doesn't work!"
+
+    def test_price_sorting_add(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        new_record = ('Joka', 200, 1000)
+        checkme_site.add_table_record(*new_record)
+
+        sorted_prices = sorted([checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))])
+        checkme_site.click_the_prices_header()
+        prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
+
+        assert prices == sorted_prices, "Sorting by price after adding record doesn't work!"
+
+    def test_delete_record_origin(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        del_index = 1
+
+        table_content = checkme_site.parse_table_content()
+        table_content.pop(del_index)
+
+        checkme_site.click_the_delete_record(del_index+1)
+
+        assert table_content == checkme_site.parse_table_content(), "Another record was removed!"
+
+    def test_delete_record_add(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        del_index = 1
+
+        new_record = ('Joka', 200, 1000)
+        checkme_site.add_table_record(*new_record)
+
+        table_content = checkme_site.parse_table_content()
+        table_content.pop(del_index)
+
+        checkme_site.click_the_delete_record(del_index+1)
+
+        assert table_content == checkme_site.parse_table_content(), "Another record was removed!"
+
+    def test_delete_new_record(self, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        new_record = ('Joka', 200, 1000)
+        checkme_site.add_table_record(*new_record)
+
+        table_content = checkme_site.parse_table_content()
+        del_index = len(table_content)
+        table_content.pop(del_index-1)
+
+        checkme_site.click_the_delete_record(del_index)
+
+        assert len(checkme_site.parse_table_content()) == len(table_content), "The last added record wasn't removed!"
