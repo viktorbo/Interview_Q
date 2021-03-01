@@ -66,6 +66,7 @@ class TestTask1_and_UI:
 
         assert set(set(new_table_content).difference(set(origin_table_content)).pop()[0:3]) == set(new_record), \
             "Record added incorrectly or not added!"
+        print("Record was added successfully!")
 
     def test_check_click_dicard_button(self,chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -77,6 +78,7 @@ class TestTask1_and_UI:
         checkme_site.click_the_discard_button()
 
         assert checkme_site.all_fields_is_empty(), "Discard button doesn't work!"
+        print("Discard button works!")
 
     def test_count_sorting_origin(self,chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -87,6 +89,7 @@ class TestTask1_and_UI:
         counts = [checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))]
 
         assert counts == sorted_counts, "Sorting by count doesn't work!"
+        print("Sorting by count works fine with original records.")
 
     def test_count_sorting_add(self, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -100,6 +103,7 @@ class TestTask1_and_UI:
         counts = [checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
         assert counts == sorted_counts, "Sorting by count after adding record doesn't work!"
+        print("Sorting by count works after adding a record.")
 
     def test_price_sorting_origin(self, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -110,6 +114,7 @@ class TestTask1_and_UI:
         prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
         assert prices == sorted_prices, "Sorting by price doesn't work!"
+        print("Sorting by price works fine with original records.")
 
     def test_price_sorting_add(self, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -123,6 +128,7 @@ class TestTask1_and_UI:
         prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
         assert prices == sorted_prices, "Sorting by price after adding record doesn't work!"
+        print("Sorting by price works after adding a record.")
 
     def test_delete_record_origin(self, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -136,6 +142,7 @@ class TestTask1_and_UI:
         checkme_site.click_the_delete_record(del_index+1)
 
         assert table_content == checkme_site.parse_table_content(), "Another record was removed!"
+        print("Record removing works correctly with original records.")
 
     def test_delete_record_add(self, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -152,6 +159,7 @@ class TestTask1_and_UI:
         checkme_site.click_the_delete_record(del_index+1)
 
         assert table_content == checkme_site.parse_table_content(), "Another record was removed!"
+        print("Record removing works correctly after adding a record.")
 
     def test_delete_new_record(self, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -167,4 +175,5 @@ class TestTask1_and_UI:
         checkme_site.click_the_delete_record(del_index)
 
         assert len(checkme_site.parse_table_content()) == len(table_content), "The last added record wasn't removed!"
+        print("New record was removed.")
 
