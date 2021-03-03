@@ -2,7 +2,6 @@ from api_testing.helpers.utils import read_json, list_transform_dict
 from api_testing.helpers.json_placeholder_api import JSON_PlaceholderAPI as api
 import json
 import pytest
-from pathlib import Path
 
 
 class TestGET:
@@ -82,27 +81,150 @@ class TestGET:
 
 
 class TestPOST:
-    def test_post_post(self, log):
-        api.check_post(url=api.POSTS_URL, json_item=api.fake_post)
-        log.info(f"POST request to {api.POSTS_URL} with json: {api.fake_post} successful!")
+    def test_post_posts_normal(self, log):
+        fake_post = \
+            {
+                "userId": 10,
+                "title": "Fake",
+                "body": "Fake Fake Fake"
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
 
-    def test_post_comment(self, log):
-        api.check_post(url=api.COMMENTS_URL, json_item=api.fake_comment)
-        log.info(f"POST request to {api.COMMENTS_URL} with json: {api.fake_comment} successful!")
+    def test_post_posts_already_exist(self, log):
+        fake_post = \
+            {
+                "id": 1,
+                "userId": 10,
+                "title": "fake",
+                "body": "fake fake fake"
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
 
-    def test_post_album(self, log):
-        api.check_post(url=api.ALBUMS_URL, json_item=api.fake_album)
-        log.info(f"POST request to {api.ALBUMS_URL} with json: {api.fake_album} successful!")
+    def test_post_posts_empty(self, log):
+        fake_post = \
+            {
+                "userId": None,
+                "title": None,
+                "body": None
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
 
-    def test_post_photo(self, log):
-        api.check_post(url=api.PHOTOS_URL, json_item=api.fake_photo)
-        log.info(f"POST request to {api.PHOTOS_URL} with json: {api.fake_photo} successful!")
+    def test_post_posts_https(self, log):
+        url = api.POSTS_URL.replace('http:', 'https:')
+        fake_post = \
+            {
+                "userId": 10,
+                "title": "fake",
+                "body": "fake fake fake"
+            }
+        request = api.check_post(url=url, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {url} with json: {fake_post} successful!")
 
-    def test_post_todos(self, log):
-        api.check_post(url=api.TODOS_URL, json_item=api.fake_todo)
-        log.info(f"POST request to {api.TODOS_URL} with json: {api.fake_todo} successful!")
+    def test_post_posts_id_over100(self, log):
+        fake_post = \
+            {
+                "id": 105,
+                "userId": 10,
+                "title": "fake",
+                "body": "fake fake fake"
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
 
-    def test_post_user(self, log):
-        api.check_post(url=api.USERS_URL, json_item=api.fake_user)
-        log.info(f"POST request to {api.USERS_URL} with json: {api.fake_user} successful!")
+    def test_post_posts_id_less0(self, log):
+        fake_post = \
+            {
+                "id": -5,
+                "userId": 10,
+                "title": "fake",
+                "body": "fake fake fake"
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
 
+    def test_post_posts_str_id(self, log):
+        fake_post = \
+            {
+                "userId": 'fake',
+                "title": 'fake',
+                "body": 'fake'
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
+
+    def test_post_posts_str_id_spec_chars(self, log):
+        fake_post = \
+            {
+                "userId": '!@#$%^&*()_+=<>,.;:"/?\|{}[]~`',
+                "title": 'fake',
+                "body": 'fake'
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
+
+    def test_post_posts_len_title(self, log):
+        fake_post = \
+            {
+                "userId": 5,
+                "title": 300*'s',
+                "body": 'fake'
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
+
+    def test_post_posts_spec_chars_title(self, log):
+        fake_post = \
+            {
+                "userId": 5,
+                "title": 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`',
+                "body": 'fake'
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
+
+    def test_post_posts_len_body(self, log):
+        fake_post = \
+            {
+                "userId": 5,
+                "title": 'fake',
+                "body": 300*'s'
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")
+
+    def test_post_posts_spec_chars_body(self, log):
+        fake_post = \
+            {
+                "userId": 5,
+                "title": 'fake',
+                "body": 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`'
+            }
+        request = api.check_post(url=api.POSTS_URL, json_item=fake_post)
+        fake_post.update({'id': 101})
+        assert json.loads(request.content) == fake_post, log.error("Request data don't match with input data.")
+        log.info(f"POST request to {api.POSTS_URL} with json: {fake_post} successful!")

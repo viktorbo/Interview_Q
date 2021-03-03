@@ -23,66 +23,6 @@ class JSON_PlaceholderAPI:
 
     USERS_URL = BASE_URL + '/users'
 
-    fake_post = \
-        {
-            "userId": 10,
-            "title": "fake",
-            "body": "fake fake fake"
-        }
-
-    fake_comment = \
-        {
-            "postId": 21,
-            "name": "fake",
-            "email": "fake@fake.tv",
-            "body": "fake fake fake"
-        }
-
-    fake_album = \
-        {
-            "userId": 1,
-            "title": "fake fake fake"
-        }
-
-    fake_photo = \
-        {
-            "albumId": 1,
-            "title": "fake fake fake",
-            "url": "https://via.placeholder.com/600/92c952",
-            "thumbnailUrl": "https://via.placeholder.com/150/92c952"
-        }
-
-    fake_todo = \
-        {
-            "userId": 1,
-            "title": "fake fake fake",
-            "completed": False
-        }
-
-    fake_user = \
-        {
-            "name": "Fake Fake",
-            "username": "JOJA",
-            "email": "fake@april.biz",
-            "address": {
-                "street": "Kulas Light",
-                "suite": "Apt. 556",
-                "city": "Sarovsk",
-                "zipcode": "92998-3874",
-                "geo": {
-                    "lat": "-37.3159",
-                    "lng": "81.1496"
-                }
-            },
-            "phone": "1-800-555-35-35",
-            "website": "hildegard.org",
-            "company": {
-                "name": "Company",
-                "catchPhrase": "Multi-layered client-server neural-net",
-                "bs": "harness real-time e-markets"
-            }
-        }
-
     @staticmethod
     def check_status_code(status_code, request_code):
         assert status_code == request_code
@@ -96,6 +36,7 @@ class JSON_PlaceholderAPI:
         return content
 
     @staticmethod
-    def check_post(url, json_item, **kwargs):
+    def check_post(url, json_item, status_code=201, **kwargs):
         request = requests.post(url=url, json=json_item, **kwargs)
-        JSON_PlaceholderAPI.check_status_code(201, request.status_code)
+        JSON_PlaceholderAPI.check_status_code(status_code, request.status_code)
+        return request
