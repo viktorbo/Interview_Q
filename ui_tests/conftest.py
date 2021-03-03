@@ -22,6 +22,7 @@ def log():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.addHandler(info_handler)
+    logger.addHandler(err_handler)
 
     yield logger
 
