@@ -5,7 +5,7 @@ import pytest
 
 
 class TestGET:
-    def test_get(self, log):
+    def test_get_base(self, log):
         url = api.BASE_URL
         api.check_get(url)
         log.info(f"GET request to {url} successful!")
@@ -26,14 +26,21 @@ class TestGET:
         api.check_get(url=url, status_code=404)
         log.info(f"GET request to {url} return 404 code. It's expected.")
 
-    @pytest.mark.parametrize("n", [1, 55, 100])
+    @pytest.mark.parametrize("n", [1, 55, 100, 0, 101, 'foo', -1, 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`'])
     def test_get_posts_n(self, log, n):
         url = f"{api.POSTS_URL}/{n}"
+        status_code = 200
+        success_msg = f"GET request to {url} successful!"
 
-        content = api.check_get(url)
-        log.info(f"GET request to {url} successful!")
+        if n in [0, 101, 'foo', -1, 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`']:
+            status_code = 404
+            expected_result = {}
+            success_msg = f"GET request to {url} returned 404 code and empty data!"
+        else:
+            expected_result = read_json(api.POSTS_JSON)[n - 1]
 
-        expected_result = read_json(api.POSTS_JSON)[n - 1]
+        content = api.check_get(url, status_code)
+        log.info(success_msg)
 
         assert expected_result == list_transform_dict(content), \
             log.error("Expected data don't equal to data from request!")
@@ -46,16 +53,24 @@ class TestGET:
 
         assert [] == list_transform_dict(content), log.error("Expected data don't equal to data from request!")
 
-    @pytest.mark.parametrize("n", [1, 55, 100])
+    @pytest.mark.parametrize("n", [1, 55, 100, 0, 101, 'foo', -1, 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`'])
     def test_get_post_n_comments(self, log, n):
         url = f"{api.POSTS_URL}/{n}/comments"
+        status_code = 200
+        success_msg = f"GET request to {url} successful!"
+        expected_result = []
 
-        content = api.check_get(url)
-        log.info(f"GET request to {url} successful!")
+        if n in [0, 101, 'foo', -1, 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`']:
+            if n == 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`':
+                status_code = 404
+                expected_result = {}
+                success_msg = f"GET request to {url} returned 404 code and empty data!"
+        else:
+            expected_result = dict(zip(['1', '55', '100'], read_json(api.POST_COMMENTS_JSON)))[f'{n}']
+        content = api.check_get(url, status_code)
+        log.info(success_msg)
 
-        expected_result = read_json(api.POST_COMMENTS_JSON)
-
-        assert dict(zip(['1', '55', '100'], expected_result))[f'{n}'] == list_transform_dict(content), \
+        assert expected_result == list_transform_dict(content), \
             log.error("Expected data don't equal to data from request!")
 
     def test_get_comments_post_id_negative(self, log):
@@ -66,15 +81,17 @@ class TestGET:
 
         assert [] == list_transform_dict(content), log.error("Expected data don't equal to data from request!")
 
-    @pytest.mark.parametrize("n", [1, 55, 100])
+    @pytest.mark.parametrize("n", [1, 55, 100, 0, 101, 'foo', -1, 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`'])
     def test_get_comments_post_id(self, log, n):
         url = f"{api.COMMENTS_URL}?postId={n}"
+        success_msg = f"GET request to {url} successful!"
+        expected_result = []
+
+        if n not in [0, 101, 'foo', -1, 'fake!@#$%^&*()_+=<>,.;:"/?\|{}[]~`']:
+            expected_result = [result for result in read_json(api.COMMENTS_JSON) if result['postId'] == n]
 
         content = api.check_get(url)
-        log.info(f"GET request to {url} successful!")
-
-        expected_result = read_json(api.COMMENTS_JSON)
-        expected_result = [result for result in expected_result if result['postId'] == n]
+        log.info(success_msg)
 
         assert expected_result == list_transform_dict(content), \
             log.error("Expected data don't equal to data from request!")
