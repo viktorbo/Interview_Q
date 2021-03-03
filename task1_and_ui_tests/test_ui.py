@@ -87,8 +87,8 @@ class TestTask1_and_UI:
         checkme_site.click_the_counts_header()
         counts = [checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert counts == sorted_counts, log.error("Sorting by count doesn't work!")
-        log.info("Sorting by count works fine with original records.")
+        assert counts == sorted_counts, log.error("Sorting by count works incorrectly!")
+        log.info("Sorting by count works correctly with original records.")
 
     def test_count_sorting_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -101,8 +101,8 @@ class TestTask1_and_UI:
         checkme_site.click_the_counts_header()
         counts = [checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert counts == sorted_counts, log.error("Sorting by count after adding record doesn't work!")
-        log.info("Sorting by count works after adding a record.")
+        assert counts == sorted_counts, log.error("Sorting by count works incorrectly after adding a record!")
+        log.info("Sorting by count works correctly after adding a record.")
 
     def test_price_sorting_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -112,8 +112,8 @@ class TestTask1_and_UI:
         checkme_site.click_the_prices_header()
         prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert prices == sorted_prices, log.error("Sorting by price doesn't work!")
-        log.info("Sorting by price works fine with original records.")
+        assert prices == sorted_prices, log.error("Sorting by price works incorrectly!")
+        log.info("Sorting by price works correctly with original records.")
 
     def test_price_sorting_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -126,8 +126,8 @@ class TestTask1_and_UI:
         checkme_site.click_the_prices_header()
         prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert prices == sorted_prices, log.error("Sorting by price after adding record doesn't work!")
-        log.info("Sorting by price works after adding a record.")
+        assert prices == sorted_prices, log.error("Sorting by price works incorrectly after adding a record!")
+        log.info("Sorting by price works correctly after adding a record.")
 
     def test_delete_record_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -140,7 +140,8 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index+1)
 
-        assert table_content == checkme_site.parse_table_content(), log.error("Another record was removed!")
+        assert table_content == checkme_site.parse_table_content(), log.error("Record removing works incorrectly! "
+                                                                              "Another record was removed!")
         log.info("Record removing works correctly with original records.")
 
     def test_delete_record_add(self, log, chrome_driver):
@@ -157,7 +158,8 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index+1)
 
-        assert table_content == checkme_site.parse_table_content(), log.error("Another record was removed!")
+        assert table_content == checkme_site.parse_table_content(), log.error("Record removing works incorrectly after adding a record."
+                                                                              "Another record was removed!")
         log.info("Record removing works correctly after adding a record.")
 
     def test_delete_new_record(self, log, chrome_driver):
@@ -173,6 +175,7 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index)
 
-        assert len(checkme_site.parse_table_content()) == len(table_content), log.error("The last added record wasn't removed!")
-        log.info("New record was removed.")
+        assert len(checkme_site.parse_table_content()) == len(table_content), log.error("Record removing works incorrectly!"
+                                                                                        "The new record hasn't been removed!")
+        log.info("Record removing works correctly. The new record has been removed.")
 
