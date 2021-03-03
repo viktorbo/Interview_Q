@@ -1,9 +1,9 @@
-from task1_and_ui_tests.pages.checkme.helper import CheckmeHelper
+from ui_tests.pages.checkme.helper import CheckmeHelper
 
 
 class TestTask1_and_UI:
 
-    def test_check_the_filling_of_the_table(self, log, chrome_driver, database):
+    def test_task_1(self, log, chrome_driver, database):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -158,7 +158,7 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index+1)
 
-        assert table_content == checkme_site.parse_table_content(), log.error("Record removing works incorrectly after adding a record."
+        assert table_content == checkme_site.parse_table_content(), log.error("Record removing works incorrectly after adding a record. "
                                                                               "Another record was removed!")
         log.info("Record removing works correctly after adding a record.")
 
@@ -175,7 +175,7 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index)
 
-        assert len(checkme_site.parse_table_content()) == len(table_content), log.error("Record removing works incorrectly!"
+        assert len(checkme_site.parse_table_content()) == len(table_content), log.error("Record removing works incorrectly! "
                                                                                         "The new record hasn't been removed!")
         log.info("Record removing works correctly. The new record has been removed.")
 

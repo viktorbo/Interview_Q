@@ -2,7 +2,7 @@ import pytest
 import os
 import sys
 from selenium import webdriver
-from task1_and_ui_tests.databases.SQLite.database import SQLiteDataBase
+from ui_tests.databases.SQLite.database import SQLiteDataBase
 import logging
 
 
