@@ -3,7 +3,7 @@ from task1_and_ui_tests.pages.checkme.helper import CheckmeHelper
 
 class TestTask1_and_UI:
 
-    def test_check_the_filling_of_the_table(self, chrome_driver, database):
+    def test_check_the_filling_of_the_table(self, log, chrome_driver, database):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -21,40 +21,39 @@ class TestTask1_and_UI:
         database.add_records(table_name=db_table_name,
                              columns_names=table_header,
                              val=current_table_content)
+        log.info("TABLE CONTENT HAS BEEN LOADED TO DATABASE.")
 
         # ADDING SOME RECORDS TO THE TABLE ON THE SITE
+        log.info("--- ADDING SOME RECORDS TO THE TABLE ---")
         new_table_records = [('Joja', 5, 100500), ('Lupa', 1, 777), ('Pupa', 2, 300)]
         checkme_site.add_table_records(new_table_records)
         current_site_table_content = checkme_site.parse_table_content()
-        print(f"Records {new_table_records} were added to the checkme (site) table!")
+        log.info(f"Records {new_table_records} were added to the checkme (site) table!")
 
 
         # DATABASE / SITE DATA COMPARISON
+        log.info("--- DATABASE / SITE DATA COMPARISON ---")
         site_table_set = set(current_site_table_content)
         database_set = set([obj[1:] for obj in database.select_all('checkme')])
 
-        print("Records in DATABASE, but NOT on the SITE:      "
-              f"{list(database_set.difference(site_table_set))} \n"
-              "Records ON the SITE, but NOT in DATABASE:       "
-              f"{list(site_table_set.difference(database_set))} \n"
-              "Duplicated records:                             "
-              f"{list(set.intersection(database_set, site_table_set))}"
-              ""
-              )
+        log.info(f"Records in DATABASE, but NOT on the SITE: {list(database_set.difference(site_table_set))}")
+        log.info(f"Records ON the SITE, but NOT in DATABASE: {list(site_table_set.difference(database_set))}")
+        log.info(f"Duplicated records: {list(set.intersection(database_set, site_table_set))}")
 
         # INPUT DATA COMPARISON FOR SITE
+        log.info("--- INPUT DATA COMPARISON ---")
+
         new_table_records_names = [obj[0] for obj in new_table_records]
         new_records_from_site = [obj[:-1] for obj in current_site_table_content if obj[0] in new_table_records_names]
 
         assert len(new_table_records) == len(new_records_from_site), \
-            "Count of new records in the checkme (site) don't equal the number of new records"
+            log.error("Count of new records in the checkme (site) don't equal the number of new records")
 
         for i in range(len(new_table_records)):
             if set(new_table_records[i]) == set(new_records_from_site[i]) and new_table_records[i] != new_records_from_site[i]:
-                print("\n "
-                      f"Columns order in new record {new_records_from_site[i]} don't match with original record {new_table_records[i]}")
+                log.info(f"Columns order in new record {new_records_from_site[i]} don't match with original record {new_table_records[i]}")
 
-    def test_check_add_record(self, chrome_driver):
+    def test_check_add_record(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -65,10 +64,10 @@ class TestTask1_and_UI:
         new_table_content = checkme_site.parse_table_content()
 
         assert set(set(new_table_content).difference(set(origin_table_content)).pop()[0:3]) == set(new_record), \
-            "Record added incorrectly or not added!"
-        print("Record was added successfully!")
+            log.error("Record added incorrectly or not added!")
+        log.info("Record was added successfully!")
 
-    def test_check_click_dicard_button(self,chrome_driver):
+    def test_check_click_dicard_button(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -77,10 +76,10 @@ class TestTask1_and_UI:
         checkme_site.enter_item_information(*new_record)
         checkme_site.click_the_discard_button()
 
-        assert checkme_site.all_fields_is_empty(), "Discard button doesn't work!"
-        print("Discard button works!")
+        assert checkme_site.all_fields_is_empty(), log.error("Discard button doesn't work!")
+        log.info("Discard button works!")
 
-    def test_count_sorting_origin(self,chrome_driver):
+    def test_count_sorting_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -88,10 +87,10 @@ class TestTask1_and_UI:
         checkme_site.click_the_counts_header()
         counts = [checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert counts == sorted_counts, "Sorting by count doesn't work!"
-        print("Sorting by count works fine with original records.")
+        assert counts == sorted_counts, log.error("Sorting by count doesn't work!")
+        log.info("Sorting by count works fine with original records.")
 
-    def test_count_sorting_add(self, chrome_driver):
+    def test_count_sorting_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -102,10 +101,10 @@ class TestTask1_and_UI:
         checkme_site.click_the_counts_header()
         counts = [checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert counts == sorted_counts, "Sorting by count after adding record doesn't work!"
-        print("Sorting by count works after adding a record.")
+        assert counts == sorted_counts, log.error("Sorting by count after adding record doesn't work!")
+        log.info("Sorting by count works after adding a record.")
 
-    def test_price_sorting_origin(self, chrome_driver):
+    def test_price_sorting_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -113,10 +112,10 @@ class TestTask1_and_UI:
         checkme_site.click_the_prices_header()
         prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert prices == sorted_prices, "Sorting by price doesn't work!"
-        print("Sorting by price works fine with original records.")
+        assert prices == sorted_prices, log.error("Sorting by price doesn't work!")
+        log.info("Sorting by price works fine with original records.")
 
-    def test_price_sorting_add(self, chrome_driver):
+    def test_price_sorting_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -127,10 +126,10 @@ class TestTask1_and_UI:
         checkme_site.click_the_prices_header()
         prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert prices == sorted_prices, "Sorting by price after adding record doesn't work!"
-        print("Sorting by price works after adding a record.")
+        assert prices == sorted_prices, log.error("Sorting by price after adding record doesn't work!")
+        log.info("Sorting by price works after adding a record.")
 
-    def test_delete_record_origin(self, chrome_driver):
+    def test_delete_record_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -141,10 +140,10 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index+1)
 
-        assert table_content == checkme_site.parse_table_content(), "Another record was removed!"
-        print("Record removing works correctly with original records.")
+        assert table_content == checkme_site.parse_table_content(), log.error("Another record was removed!")
+        log.info("Record removing works correctly with original records.")
 
-    def test_delete_record_add(self, chrome_driver):
+    def test_delete_record_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -158,10 +157,10 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index+1)
 
-        assert table_content == checkme_site.parse_table_content(), "Another record was removed!"
-        print("Record removing works correctly after adding a record.")
+        assert table_content == checkme_site.parse_table_content(), log.error("Another record was removed!")
+        log.info("Record removing works correctly after adding a record.")
 
-    def test_delete_new_record(self, chrome_driver):
+    def test_delete_new_record(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
@@ -174,6 +173,6 @@ class TestTask1_and_UI:
 
         checkme_site.click_the_delete_record(del_index)
 
-        assert len(checkme_site.parse_table_content()) == len(table_content), "The last added record wasn't removed!"
-        print("New record was removed.")
+        assert len(checkme_site.parse_table_content()) == len(table_content), log.error("The last added record wasn't removed!")
+        log.info("New record was removed.")
 

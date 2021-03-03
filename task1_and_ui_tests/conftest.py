@@ -1,7 +1,29 @@
 import pytest
 import os
+import sys
 from selenium import webdriver
 from task1_and_ui_tests.databases.SQLite.database import SQLiteDataBase
+import logging
+
+
+@pytest.fixture(scope='module')
+def log():
+    # log_format = '%(asctime)s [%(levelname)s]: %(message)s'
+    log_format = '[%(levelname)s]: %(message)s'
+
+    info_handler = logging.StreamHandler(sys.stdout)
+    info_handler.setLevel(logging.INFO)
+    info_handler.setFormatter(logging.Formatter(log_format))
+
+    err_handler = logging.StreamHandler(sys.stdout)
+    err_handler.setLevel(logging.ERROR)
+    err_handler.setFormatter(log_format)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.addHandler(info_handler)
+
+    yield logger
 
 
 @pytest.fixture(scope='class')
