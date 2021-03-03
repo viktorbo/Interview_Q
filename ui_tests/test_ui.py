@@ -57,76 +57,123 @@ class TestTask1_and_UI:
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
-        origin_table_content = checkme_site.parse_table_content()
-
         new_record = ('Joka', 200, 1000)
         checkme_site.add_table_record(*new_record)
-        new_table_content = checkme_site.parse_table_content()
+        log.info(f"Record {new_record} has been added to table.")
 
-        assert set(set(new_table_content).difference(set(origin_table_content)).pop()[0:3]) == set(new_record), \
+        table_content = checkme_site.parse_table_content()
+        log.info(f"Current table content: {table_content}")
+
+        assert new_record in [obj[0:3] for obj in table_content], \
             log.error("Record added incorrectly or not added!")
         log.info("Record was added successfully!")
 
-    def test_check_click_dicard_button(self, log, chrome_driver):
+    def test_check_click_discard_button_form(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
         checkme_site.click_the_open_button()
         new_record = ('Joka', 200, 1000)
+        log.info(f"Fill the new record form fields: {new_record}")
         checkme_site.enter_item_information(*new_record)
+
+        log.info("Click the discard button...")
         checkme_site.click_the_discard_button()
 
-        assert checkme_site.all_fields_is_empty(), log.error("Discard button doesn't work!")
-        log.info("Discard button works!")
+        assert checkme_site.all_fields_is_empty(), log.error("Discard button doesn't work for 'add new record' form. "
+                                                             "Form is not empty!")
+        log.info("Discard button works correctly for 'add new record' form!")
+
+    def test_check_click_discard_button_table(self, log, chrome_driver):
+        checkme_site = CheckmeHelper(driver=chrome_driver)
+        checkme_site.go_to_site()
+
+        original_table_content = checkme_site.parse_table_content()
+        log.info(f"Original table content: {original_table_content}")
+
+        new_record = ('Joka', 200, 1000)
+        log.info(f"Adding record {new_record} to the table ...")
+        checkme_site.add_table_record(*new_record)
+
+        log.info("Click the discard button...")
+        checkme_site.click_the_discard_button()
+
+        new_table_content = checkme_site.parse_table_content()
+        log.info(f"New table content: {new_table_content}")
+
+        assert original_table_content == new_table_content, log.error("Discard button doesn't work for table content!")
+        log.info("Discard button works for table content!")
 
     def test_count_sorting_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
-        sorted_counts = sorted([checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))])
-        checkme_site.click_the_counts_header()
-        counts = [checkme_site.get_count(i+1) for i in range(len(checkme_site.parse_table_content()))]
+        before_sortig_content = checkme_site.parse_table_content()
+        log.info(f"Content before sorting: {before_sortig_content}")
 
-        assert counts == sorted_counts, log.error("Sorting by count works incorrectly!")
+        log.info("Click the count header...")
+        checkme_site.click_the_counts_header()
+
+        after_sorting_content = checkme_site.parse_table_content()
+        log.info(f"Content after sorting: {after_sorting_content}")
+
+        assert sorted(before_sortig_content, key=lambda x: x[1]) == after_sorting_content, log.error("Sorting by count works incorrectly!")
         log.info("Sorting by count works correctly with original records.")
 
     def test_count_sorting_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
+        before_sortig_content = checkme_site.parse_table_content()
+        log.info(f"Content before sorting: {before_sortig_content}")
+
         new_record = ('Joka', 200, 1000)
+        log.info(f"Adding record {new_record} to the table ...")
         checkme_site.add_table_record(*new_record)
 
-        sorted_counts = sorted([checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))])
+        log.info("Click the count header...")
         checkme_site.click_the_counts_header()
-        counts = [checkme_site.get_count(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert counts == sorted_counts, log.error("Sorting by count works incorrectly after adding a record!")
+        after_sorting_content = checkme_site.parse_table_content()
+        log.info(f"Content after sorting: {after_sorting_content}")
+
+        assert sorted(before_sortig_content, key=lambda x: x[1]) == after_sorting_content, log.error("Sorting by count works incorrectly after adding a record!")
         log.info("Sorting by count works correctly after adding a record.")
 
     def test_price_sorting_origin(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
-        sorted_prices = sorted([checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))])
-        checkme_site.click_the_prices_header()
-        prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
+        before_sortig_content = checkme_site.parse_table_content()
+        log.info(f"Content before sorting: {before_sortig_content}")
 
-        assert prices == sorted_prices, log.error("Sorting by price works incorrectly!")
+        log.info("Click the price header ...")
+        checkme_site.click_the_prices_header()
+
+        after_sorting_content = checkme_site.parse_table_content()
+        log.info(f"Content after sorting: {after_sorting_content}")
+
+        assert sorted(before_sortig_content, key=lambda x: x[2]) == after_sorting_content, log.error("Sorting by price works incorrectly!")
         log.info("Sorting by price works correctly with original records.")
 
     def test_price_sorting_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
         checkme_site.go_to_site()
 
+        before_sortig_content = checkme_site.parse_table_content()
+        log.info(f"Content before sorting: {before_sortig_content}")
+
         new_record = ('Joka', 200, 1000)
+        log.info(f"Adding record {new_record} to the table ...")
         checkme_site.add_table_record(*new_record)
 
-        sorted_prices = sorted([checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))])
+        log.info("Click the price header...")
         checkme_site.click_the_prices_header()
-        prices = [checkme_site.get_price(i + 1) for i in range(len(checkme_site.parse_table_content()))]
 
-        assert prices == sorted_prices, log.error("Sorting by price works incorrectly after adding a record!")
+        after_sorting_content = checkme_site.parse_table_content()
+        log.info(f"Content after sorting: {after_sorting_content}")
+
+        assert sorted(before_sortig_content, key=lambda x: x[2]) == after_sorting_content, log.error("Sorting by price works incorrectly after adding a record!")
         log.info("Sorting by price works correctly after adding a record.")
 
     def test_delete_record_origin(self, log, chrome_driver):
@@ -136,13 +183,17 @@ class TestTask1_and_UI:
         del_index = 1
 
         table_content = checkme_site.parse_table_content()
+        log.info(f"Original table content: {table_content}")
+
         table_content.pop(del_index)
+        log.info(f"Expected table content after removing the record number {del_index+1}: {table_content}")
 
         checkme_site.click_the_delete_record(del_index+1)
+        new_table_content = checkme_site.parse_table_content()
+        log.info(f"Table content after removing the record number {del_index+1}: {new_table_content}")
 
-        assert table_content == checkme_site.parse_table_content(), log.error("Record removing works incorrectly! "
-                                                                              "Another record was removed!")
-        log.info("Record removing works correctly with original records.")
+        assert table_content == new_table_content, log.error("Record removing works incorrectly!")
+        log.info("Record removing works correctly for original records.")
 
     def test_delete_record_add(self, log, chrome_driver):
         checkme_site = CheckmeHelper(driver=chrome_driver)
@@ -151,15 +202,20 @@ class TestTask1_and_UI:
         del_index = 1
 
         new_record = ('Joka', 200, 1000)
+        log.info(f"Adding record {new_record} to the table ...")
         checkme_site.add_table_record(*new_record)
 
         table_content = checkme_site.parse_table_content()
+        log.info(f"Original table content: {table_content}")
+
         table_content.pop(del_index)
+        log.info(f"Expected table content after removing the record number {del_index + 1}: {table_content}")
 
-        checkme_site.click_the_delete_record(del_index+1)
+        checkme_site.click_the_delete_record(del_index + 1)
+        new_table_content = checkme_site.parse_table_content()
+        log.info(f"Table content after removing the record number {del_index + 1}: {new_table_content}")
 
-        assert table_content == checkme_site.parse_table_content(), log.error("Record removing works incorrectly after adding a record. "
-                                                                              "Another record was removed!")
+        assert table_content == new_table_content, log.error("Record removing works incorrectly after adding a record!")
         log.info("Record removing works correctly after adding a record.")
 
     def test_delete_new_record(self, log, chrome_driver):
@@ -167,15 +223,22 @@ class TestTask1_and_UI:
         checkme_site.go_to_site()
 
         new_record = ('Joka', 200, 1000)
+        log.info(f"Adding record {new_record} to the table ...")
         checkme_site.add_table_record(*new_record)
 
         table_content = checkme_site.parse_table_content()
+        log.info(f"Original table content: {table_content}")
+
         del_index = len(table_content)
+
         table_content.pop(del_index-1)
+        log.info(f"Expected table content after removing the record number {del_index}: {table_content}")
 
         checkme_site.click_the_delete_record(del_index)
+        new_table_content = checkme_site.parse_table_content()
+        log.info(f"Table content after removing the record number {del_index}: {new_table_content}")
 
-        assert len(checkme_site.parse_table_content()) == len(table_content), log.error("Record removing works incorrectly! "
-                                                                                        "The new record hasn't been removed!")
+        assert table_content == new_table_content, log.error("Record removing works incorrectly! "
+                                                             "The new record hasn't been removed!")
         log.info("Record removing works correctly. The new record has been removed.")
 
