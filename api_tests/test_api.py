@@ -1,5 +1,5 @@
-from api_testing.helpers.utils import read_json, list_transform_dict
-from api_testing.helpers.json_placeholder_api import JSON_PlaceholderAPI as api
+from api_tests.helpers.utils import read_json, list_transform_dict
+from api_tests.helpers.json_placeholder_api import JSON_PlaceholderAPI as api
 import json
 import pytest
 

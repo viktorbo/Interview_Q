@@ -15,14 +15,6 @@ class JSON_PlaceholderAPI:
     COMMENTS_JSON = (Path(JSON_DIR) / 'comments.json').as_posix()
     POST_COMMENTS_JSON = (Path(JSON_DIR) / 'posts_comments.json').as_posix()
 
-    ALBUMS_URL = BASE_URL + '/albums'
-
-    PHOTOS_URL = BASE_URL + '/photos'
-
-    TODOS_URL = BASE_URL + '/todos'
-
-    USERS_URL = BASE_URL + '/users'
-
     @staticmethod
     def check_status_code(status_code, request_code):
         assert status_code == request_code
